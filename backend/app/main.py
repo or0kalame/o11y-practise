@@ -1,10 +1,19 @@
 from fastapi import FastAPI
-from .routes import router
+from fastapi.middleware.cors import CORSMiddleware
+from routes import router
 
 app = FastAPI(
-    title="Сервис доставки",
-    description="Добавление и получение посылок",
-    version="1.0"
+    title="Delivery Service",
+    version="1.0.0",
 )
 
+# Разрешаем фронтенду доступ
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Подключаем маршруты
 app.include_router(router)

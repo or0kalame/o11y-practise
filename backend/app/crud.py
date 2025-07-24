@@ -1,35 +1,40 @@
-from .schemas import PackageCreate, PackageRead
+from database import db
 
-def create_package(package: PackageCreate):
-    with ydb.SessionPool(driver) as session_pool:
-        def insert(session):
-            session.transaction(ydb.SerializableReadWrite()).execute(
-                """
-                INSERT INTO packages (tracking_number, status, warehouse_number, product_name, pickup_address)
-                VALUES (?, ?, ?, ?, ?)
-                """,
-                parameters=(
-                    package.tracking_number,
-                    package.status,
-                    package.warehouse_number,
-                    package.product_name,
-                    package.pickup_address
-                ),
-                commit_tx=True
-            )
-        session_pool.retry_operation_sync(insert)
-        return package
 
-def get_package_by_tracking(tracking_number: str):
-    with ydb.SessionPool(driver) as session_pool:
-        def select(session):
-            result_sets = session.transaction().execute(
-                """
-                SELECT * FROM packages WHERE tracking_number = ?
-                """,
-                parameters=(tracking_number,),
-                commit_tx=True
-            )
-            result = list(result_sets[0].rows)
-            return result[0] if result else None
-        return session_pool.retry_operation_sync(select)
+def upsert_package(data: dict):
+    query = """
+    DECLARE $tracking_number AS Utf8;
+    DECLARE $status AS Utf8;
+    DECLARE $warehouse_number AS Utf8;
+    DECLARE $product_name AS Utf8;
+
+    UPSERT INTO packages (
+        tracking_number,
+        status,
+        warehouse_number,
+        product_name
+    ) VALUES (
+        $tracking_number,
+        $status,
+        $warehouse_number,
+        $product_name
+    );
+    """
+
+    params = {
+        "$tracking_number": data.get("tracking_number"),
+        "$status": data.get("status"),
+        "$warehouse_number": data.get("warehouse_number"),
+        "$product_name": data.get("product_name"),
+    }
+
+    db.execute(query, params)
+
+def get_package(tracking_number: str):
+    query = """
+    DECLARE $tracking_number As Utf8;
+
+    SELECT * FROM packages WHERE tracking_number = $tracking_number;
+    """
+    result = db.execute(query, {"$tracking_number": tracking_number})
+    return result[0].rows if result else []

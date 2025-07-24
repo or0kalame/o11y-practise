@@ -1,16 +1,24 @@
-from fastapi import APIRouter, HTTPException
-from .schemas import PackageCreate, PackageRead
-from .crud import create_package, get_package_by_tracking
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
+import crud
 
 router = APIRouter()
 
-@router.post("/add_package", response_model=PackageRead)
-def add_package(package: PackageCreate):
-    return create_package(package)
+class Package(BaseModel):
+    tracking_number: str
+    warehouse_number: str
+    product_name: str
 
-@router.get("/get", response_model=PackageRead)
+@router.post("/add_package")
+def add_package(pkg: Package):
+    data = pkg.dict()
+    data["status"] = "formed"
+    crud.upsert_package(data)
+    return {"message": "Package added"}
+
+@router.get("/get")
 def get_package(tracking_number: str):
-    result = get_package_by_tracking(tracking_number)
-    if not result:
-        raise HTTPException(status_code=404, detail="Package not found")
-    return PackageRead(**result)
+    result = crud.get_package(tracking_number)
+    if result:
+        return dict(result[0])
+    raise HTTPException(status_code=404, detail="Package not found")

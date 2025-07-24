@@ -1,20 +1,19 @@
 import ydb
-import ydb.iam
 
-with open('/home/user/ydbd/ydb_certs/cert.pem') as f:
-    root_cert = f.read()
+class YDBClient:
+    def __init__(self, endpoint="grpc://localhost:2136", database="/local"):
+        self.driver_config = ydb.DriverConfig(
+            endpoint=endpoint,
+            database=database,
+            credentials=ydb.AnonymousCredentials(),
+        )
+        self.driver = ydb.Driver(self.driver_config)
+        self.driver.wait(timeout=5)
+        self.pool = ydb.QuerySessionPool(self.driver)
 
-driver_config = ydb.DriverConfig(
-    endpoint="grpc://localhost:2136/",
-    database="/local",
-    credentials=ydb.AnonymousCredentials()
-)
+    def execute(self, query: str, params: dict = None):
+        result_sets = self.pool.execute_with_retries(query, params)
+        return result_sets
 
-with ydb.Driver(driver_config) as driver:
-    try:
-        driver.wait(fail_fast=True, timeout=10)
-    except TimeoutError:
-            print("Connect failed to YDB")
-            print("Last reported errors by discovery:")
-            print(driver.discovery_debug_details())
-            exit(1)
+db = YDBClient()
+
