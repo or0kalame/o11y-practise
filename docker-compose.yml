@@ -23,6 +23,7 @@ services:
   backend:
     build:
       context: ./backend
+    restart: always
     container_name: backend
     ports:
       - "8000:8000"
@@ -30,7 +31,6 @@ services:
       - ydb
     networks:
       - app-network
-
 
   frontend:
     build:
@@ -43,10 +43,41 @@ services:
     networks:
       - app-network
   
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    depends_on:
+      - ydb
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    networks:
+      - app-network
+    
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - app-network  
 
 volumes:
   ydb_data:
   ydb_certs:
+  prometheus_data:
+  grafana_data:
 
 networks:
   app-network:

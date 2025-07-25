@@ -11,21 +11,21 @@ function App() {
   const [form, setForm] = useState({
     tracking_number: generateTrackingNumber(),
     status: 'formed',
-    warehouse_id: '',
-    item_name: '',
+    warehouse_number: '',
+    product_name: '',
   });
   const [getTracking, setGetTracking] = useState('');
   const [result, setResult] = useState(null);
 
   const handleAdd = async () => {
     try {
-      await axios.post('http://localhost:8000/add_package', form);
+      await axios.post('http://51.250.87.95:8000/add_package', form);
       alert('Посылка добавлена!');
       setForm({
         tracking_number: generateTrackingNumber(),
         status: 'formed',
-        warehouse_id: '',
-        item_name: '',
+        warehouse_number: '',
+        product_name: '',
       });
     } catch (err) {
       alert('Ошибка при добавлении');
@@ -34,7 +34,7 @@ function App() {
 
   const handleGet = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/get?tracking_number=${getTracking}`);
+      const res = await axios.get(`http://51.250.87.95:8000/get?tracking_number=${getTracking}`);
       setResult(res.data);
     } catch (err) {
       alert('Посылка не найдена');
