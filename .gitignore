@@ -1,7 +1,19 @@
+.env
+frontend/src/.env
+
 backend/__pycache__
+backend/include
 backend/app/__pycache__
 backend/bin
 backend/lib
 backend/lib64
 backend/pyvenv.cfg
 
+locust/__pycache__
+locust/include
+locust/bin
+locust/lib
+locust/lib64
+locust/pyvenv.cfg
+
+load/node_modules

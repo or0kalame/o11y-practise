@@ -3,6 +3,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
+const SERVER_IP = "51.250.87.95";
+
 function generateTrackingNumber() {
   return 'TRK' + Math.floor(Math.random() * 1000000);
 }
@@ -19,7 +21,7 @@ function App() {
 
   const handleAdd = async () => {
     try {
-      await axios.post('http://51.250.87.95:8000/add_package', form);
+      await axios.post(`http://${SERVER_IP}:8000/add_package`, form);
       alert('Посылка добавлена!');
       setForm({
         tracking_number: generateTrackingNumber(),
@@ -34,7 +36,7 @@ function App() {
 
   const handleGet = async () => {
     try {
-      const res = await axios.get(`http://51.250.87.95:8000/get?tracking_number=${getTracking}`);
+      const res = await axios.get(`http://${SERVER_IP}:8000/get?tracking_number=${getTracking}`);
       setResult(res.data);
     } catch (err) {
       alert('Посылка не найдена');

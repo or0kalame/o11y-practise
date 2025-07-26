@@ -72,17 +72,21 @@ services:
       - prometheus
     networks:
       - app-network  
-    
-  load:
-    build:
-      context: ./load
-    container_name: load
+  
+  locust:
+    image: locustio/locust
     ports:
-      - "8002:8002"
-    depends_on:
-      - backend
+     - "8089:8089"
+    volumes:
+      - ./locust/locustfile.py:/mnt/locust/locustfile.py
+    env_file:
+      - .env
+    environment:
+      - SERVER_IP=${SERVER_IP}
     networks:
       - app-network  
+    command: -f /mnt/locust/locustfile.py  --host=http://${SERVER_IP}:8000
+  
 
 volumes:
   ydb_data:

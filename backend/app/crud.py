@@ -1,6 +1,5 @@
 from database import db
 
-
 def upsert_package(data: dict):
     query = """
     DECLARE $tracking_number AS Utf8;

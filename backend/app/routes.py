@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 import crud
+import time 
 
 router = APIRouter()
 
@@ -19,6 +20,7 @@ def add_package(pkg: Package):
 @router.get("/get")
 def get_package(tracking_number: str):
     result = crud.get_package(tracking_number)
+    # time.sleep(1.5)
     if result:
         return dict(result[0])
     raise HTTPException(status_code=404, detail="Package not found")
