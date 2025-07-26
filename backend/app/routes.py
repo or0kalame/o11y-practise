@@ -22,3 +22,7 @@ def get_package(tracking_number: str):
     if result:
         return dict(result[0])
     raise HTTPException(status_code=404, detail="Package not found")
+
+@router.get("/tracking_numbers")
+def list_tracking_numbers():
+    return crud.get_all_tracking_numbers()

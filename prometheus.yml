@@ -19,6 +19,7 @@ scrape_configs:
   - job_name: "backend"
     static_configs:
       - targets: ["backend:8000"]
+    scrape_interval: 5s
   
   - job_name: "ydb_dynamic"
     metrics_path: "/counters/counters=ydb/name_label=name/prometheus"

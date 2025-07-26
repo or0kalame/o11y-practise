@@ -38,3 +38,9 @@ def get_package(tracking_number: str):
     """
     result = db.execute(query, {"$tracking_number": tracking_number})
     return result[0].rows if result else []
+
+def get_all_tracking_numbers():
+    query = "SELECT tracking_number FROM packages;"
+    result = db.execute(query)
+    rows = result[0].rows if result else []
+    return [row["tracking_number"] for row in rows if row["tracking_number"] != "string"]

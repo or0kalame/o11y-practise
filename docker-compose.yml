@@ -72,12 +72,24 @@ services:
       - prometheus
     networks:
       - app-network  
+    
+  load:
+    build:
+      context: ./load
+    container_name: load
+    ports:
+      - "8002:8002"
+    depends_on:
+      - backend
+    networks:
+      - app-network  
 
 volumes:
   ydb_data:
   ydb_certs:
   prometheus_data:
   grafana_data:
+
 
 networks:
   app-network:

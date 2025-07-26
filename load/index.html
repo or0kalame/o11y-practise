@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>🚀 Load Tester</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Load Tester</h1>
+
+    <div class="card">
+      <div class="input-group">
+        <label>🔁 Тип запроса:
+          <select id="mode">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="input-group">
+        <label id="tracking-label" style="display:none;">📦 Выберите tracking_number:
+          <select id="tracking-select" multiple></select>
+        </label>
+      </div>
+
+      <div class="input-group">
+        <label>📊 RPS:
+          <input id="rps" type="number" value="5" min="1" />
+        </label>
+      </div>
+
+      <div class="input-group">
+        <label>⏱️ Время (сек):
+          <input id="duration" type="number" value="10" min="1" />
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button class="start-btn" onclick="start()">▶️ Start</button>
+        <button class="stop-btn" onclick="stop()">⏹️ Stop</button>
+      </div>
+    </div>
+
+    <div class="log-container">
+      <pre id="log"></pre>
+    </div>
+  </div>
+
+  <script>
+    // Исходный JavaScript код без изменений
+    let interval, stopTime;
+    const modeEl = document.getElementById('mode');
+    const logEl = document.getElementById('log');
+    const trackingSelect = document.getElementById('tracking-select');
+    const trackingLabel = document.getElementById('tracking-label');
+
+    const API_BASE = 'http://51.250.87.95:8000';
+
+    modeEl.addEventListener('change', () => {
+      trackingLabel.style.display = modeEl.value === 'GET' ? 'block' : 'none';
+    });
+
+    async function getTrackingNumbers() {
+      const res = await fetch(`${API_BASE}/tracking_numbers`);
+      const data = await res.json();
+      const filtered = data.filter(tn => typeof tn === 'string' && tn.toLowerCase() !== 'string');
+      trackingSelect.innerHTML = '';
+      filtered.forEach(tn => {
+        const opt = document.createElement('option');
+        opt.value = tn; opt.textContent = tn;
+        trackingSelect.appendChild(opt);
+      });
+      return filtered;
+    }
+
+    function randString(len) {
+      const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      return [...Array(len)].map(() => c[Math.floor(Math.random() * c.length)]).join('');
+    }
+
+    async function sendRequest(mode, trackingList) {
+      try {
+        if (mode === 'GET') {
+          const tn = trackingList[Math.floor(Math.random() * trackingList.length)];
+          await fetch(`${API_BASE}/get?tracking_number=${tn}`);
+        } else {
+          const body = {
+            tracking_number: randString(8),
+            warehouse_number: randString(3),
+            product_name: randString(5)
+          };
+          await fetch(`${API_BASE}/add_package`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+        }
+        logEl.textContent += '.';
+      } catch {
+        logEl.textContent += 'x';
+      }
+    }
+
+    async function start() {
+      const mode = modeEl.value;
+      const rps = parseInt(document.getElementById('rps').value);
+      const duration = parseInt(document.getElementById('duration').value) * 1000;
+      const selected = Array.from(trackingSelect.selectedOptions).map(o => o.value);
+      const trackingList = selected.length ? selected : await getTrackingNumbers();
+      if (mode === 'GET' && trackingList.length === 0) {
+        logEl.textContent = 'Нет доступных tracking_number для GET-запросов.\n';
+        return;
+      }
+      stopTime = Date.now() + duration;
+      logEl.textContent = `Запуск теста: режим=${mode}, RPS=${rps}, время=${duration / 1000} сек\n`;
+      interval = setInterval(async () => {
+        if (Date.now() > stopTime) return stop();
+        for (let i = 0; i < rps; i++) sendRequest(mode, trackingList);
+      }, 1000);
+    }
+
+    function stop() {
+      clearInterval(interval);
+      logEl.textContent += '\nТест остановлен.\n';
+    }
+
+    getTrackingNumbers();
+  </script>
+</body>
+</html>
