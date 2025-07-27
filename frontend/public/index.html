@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📦 Система мониторинга доставки</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pastel-blue: #a7c7e7;
+      --pastel-green: #c1e1c1;
+      --pastel-peach: #ffd8b1;
+      --pastel-lavender: #d8bfd8;
+      --pastel-pink: #ffb6c1;
+      --pastel-yellow: #fdfd96;
+      --pastel-purple: #c9a3d9;
+      --pastel-orange: #ffb347;
+      --text-dark: #333;
+      --text-light: #555;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f9f9f9;
+      color: var(--text-dark);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 2em auto;
+      background: white;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      color: #2c3e50;
+      border-bottom: 2px solid var(--pastel-blue);
+      padding-bottom: 0.5em;
+      margin-bottom: 1.5em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .intro {
+      background-color: #f0f8ff;
+      padding: 1.5em;
+      border-radius: 8px;
+      margin-bottom: 2em;
+      border-left: 4px solid var(--pastel-blue);
+    }
+    
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5em;
+    }
+    
+    .service-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border-top: 4px solid var(--pastel-blue);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    
+    .service-card:nth-child(1) { border-top-color: var(--pastel-blue); }
+    .service-card:nth-child(2) { border-top-color: var(--pastel-green); }
+    .service-card:nth-child(3) { border-top-color: var(--pastel-peach); }
+    .service-card:nth-child(4) { border-top-color: var(--pastel-lavender); }
+    .service-card:nth-child(5) { border-top-color: var(--pastel-pink); }
+    .service-card:nth-child(6) { border-top-color: var(--pastel-yellow); }
+    .service-card:nth-child(7) { border-top-color: var(--pastel-purple); }
+    .service-card:nth-child(8) { border-top-color: var(--pastel-orange); }
+    
+    .service-icon {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+      display: inline-block;
+    }
+    
+    .service-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+      margin: 0.5em 0;
+      color: #2c3e50;
+    }
+    
+    .service-description {
+      flex-grow: 1;
+      margin-bottom: 1em;
+      color: var(--text-light);
+      font-size: 0.95em;
+    }
+    
+    .service-link {
+      display: inline-block;
+      margin-top: auto;
+      background-color: var(--pastel-blue);
+      color: white;
+      padding: 0.7em 1.3em;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    .service-link:hover {
+      background-color: #8ab6e0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .service-card:nth-child(1) .service-link { background-color: var(--pastel-blue); }
+    .service-card:nth-child(2) .service-link { background-color: var(--pastel-green); }
+    .service-card:nth-child(3) .service-link { background-color: var(--pastel-peach); color: #333; }
+    .service-card:nth-child(4) .service-link { background-color: var(--pastel-lavender); }
+    .service-card:nth-child(5) .service-link { background-color: var(--pastel-pink); }
+    .service-card:nth-child(6) .service-link { background-color: var(--pastel-yellow); color: #333; }
+    .service-card:nth-child(7) .service-link { background-color: var(--pastel-purple); color: white; }
+    .service-card:nth-child(8) .service-link { background-color: var(--pastel-orange); color: #333; }
+    
+    .service-card:nth-child(1) .service-link:hover { background-color: #8ab6e0; }
+    .service-card:nth-child(2) .service-link:hover { background-color: #a8d8a8; }
+    .service-card:nth-child(3) .service-link:hover { background-color: #ffc999; }
+    .service-card:nth-child(4) .service-link:hover { background-color: #c9a2c9; }
+    .service-card:nth-child(5) .service-link:hover { background-color: #ff9dab; }
+    .service-card:nth-child(6) .service-link:hover { background-color: #fcfc6b; }
+    .service-card:nth-child(7) .service-link:hover { background-color: #b88fc8; }
+    .service-card:nth-child(8) .service-link:hover { background-color: #ffa726; }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5em;
+        margin: 1em;
+      }
+      
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📦 Система мониторинга доставки</h1>
+    
+    <div class="intro">
+      <h2>О проекте</h2>
+      <p>Это комплексная система для управления и мониторинга службы доставки. Включает в себя:</p>
+      <ul>
+        <li>Основное приложение для трекинга посылок</li>
+        <li>API сервисы для интеграции</li>
+        <li>Системы мониторинга производительности</li>
+        <li>Инструменты для нагрузочного тестирования</li>
+        <li>Распределённую базу данных</li>
+      </ul>
+    </div>
+    
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">🎯</div>
+        <h2 class="service-title">Трекер посылок</h2>
+        <p class="service-description">Основное приложение для работы с посылками. Позволяет добавлять новые посылки, отслеживать их статус и местоположение. Включает полный цикл от формирования до доставки.</p>
+        <a href="/tracker" class="service-link">Перейти</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">📦</div>
+        <h2 class="service-title">Swagger API</h2>
+        <p class="service-description">Документация всех API endpoints системы. Позволяет тестировать запросы, просматривать схемы данных и форматы ответов. Незаменим для разработчиков.</p>
+        <a href="http://51.250.87.95:8000/docs" target="_blank" class="service-link">Открыть</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">📊</div>
+        <h2 class="service-title">Grafana</h2>
+        <p class="service-description">Визуализация ключевых метрик системы: время ответа API, загрузка серверов, статистика запросов. Настроены дашборды для мониторинга в реальном времени.</p>
+        <a href="http://51.250.87.95:3000" target="_blank" class="service-link">Открыть</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">📈</div>
+        <h2 class="service-title">Prometheus</h2>
+        <p class="service-description">Система сбора метрик. Хранит исторические данные о работе всех компонентов системы. Используется как источник данных для Grafana.</p>
+        <a href="http://51.250.87.95:9090" target="_blank" class="service-link">Открыть</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🐍</div>
+        <h2 class="service-title">Locust</h2>
+        <p class="service-description">Инструмент нагрузочного тестирования. Позволяет имитировать высокую нагрузку на систему и оценивать её устойчивость при пиковых нагрузках.</p>
+        <a href="http://51.250.87.95:8089" target="_blank" class="service-link">Открыть</a>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">💾</div>
+        <h2 class="service-title">YDB Database</h2>
+        <p class="service-description">Распределённая высокодоступная база данных. Хранит всю информацию о посылках, складах и перемещениях. Обеспечивает отказоустойчивость.</p>
+        <a href="http://51.250.87.95:8765/monitoring" target="_blank" class="service-link">Открыть</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🔍</div>
+        <h2 class="service-title">Jaeger</h2>
+        <p class="service-description">Система распределённого трейсинга. Позволяет анализировать производительность запросов, выявлять узкие места и проблемы в цепочках вызовов.</p>
+        <a href="http://51.250.87.95:16686" target="_blank" class="service-link">Открыть</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

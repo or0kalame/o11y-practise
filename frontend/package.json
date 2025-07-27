@@ -1,0 +1,17 @@
+{
+  "name": "frontend-node",
+  "version": "1.0.0",
+  "description": "Express frontend with tracking UI and links to service dashboards",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2"
+  },
+  "keywords": []
+}
