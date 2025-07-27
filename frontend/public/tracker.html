@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Трекер посылок</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pastel-blue: #a7c7e7;
+      --pastel-green: #c1e1c1;
+      --pastel-peach: #ffd8b1;
+      --pastel-lavender: #d8bfd8;
+      --pastel-pink: #ffb6c1;
+      --text-dark: #333;
+      --text-light: #555;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f9f9f9;
+      color: var(--text-dark);
+      margin: 0;
+      padding: 2em;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    h1, h2 {
+      font-family: 'Montserrat', sans-serif;
+      color: #2c3e50;
+    }
+    
+    h1 {
+      border-bottom: 2px solid var(--pastel-blue);
+      padding-bottom: 0.5em;
+      margin-bottom: 1em;
+    }
+    
+    .form-section {
+      background: var(--pastel-green);
+      padding: 1.5em;
+      border-radius: 8px;
+      margin-bottom: 2em;
+    }
+    
+    .form-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+    
+    input {
+      padding: 0.8em;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border 0.3s;
+    }
+    
+    input:focus {
+      border-color: var(--pastel-blue);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(167, 199, 231, 0.3);
+    }
+    
+    input[disabled] {
+      background-color: #f0f0f0;
+      color: #666;
+    }
+    
+    button {
+      background-color: var(--pastel-blue);
+      color: white;
+      border: none;
+      padding: 0.8em 1.5em;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    button:hover {
+      background-color: #8ab6e0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .result {
+      background: var(--pastel-peach);
+      padding: 1.5em;
+      border-radius: 8px;
+      margin-top: 1em;
+      display: none;
+    }
+    
+    .result p {
+      margin: 0.5em 0;
+    }
+    
+    .service-links {
+      margin-top: 2em;
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
+    
+    .service-link {
+      background: var(--pastel-lavender);
+      color: #5d3a5d;
+      padding: 0.8em 1.5em;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .service-link:hover {
+      background: #c9a2c9;
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 600px) {
+      .form-group {
+        grid-template-columns: 1fr;
+      }
+      
+      .container {
+        padding: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Трекер посылок</h1>
+    
+    <div class="form-section">
+      <h2>Добавить новую посылку</h2>
+      <div class="form-group">
+        <input id="tracking_number" disabled placeholder="Трек-номер">
+        <input id="status" disabled value="formed" placeholder="Статус">
+        <input id="warehouse_number" placeholder="Номер склада">
+        <input id="product_name" placeholder="Название товара">
+      </div>
+      <button onclick="addPackage()">Добавить посылку</button>
+    </div>
+    
+    <div class="form-section">
+      <h2>Отследить посылку</h2>
+      <div class="form-group">
+        <input id="get_tracking" placeholder="Введите трек-номер">
+      </div>
+      <button onclick="getPackage()">Найти посылку</button>
+      <div class="result" id="result"></div>
+    </div>
+    
+    <div class="service-links">
+      <a href="/docs" class="service-link">Все сервисы</a>
+      <a href="http://51.250.87.95:8000/docs" class="service-link" target="_blank">Swagger API</a>
+      <a href="http://51.250.87.95:3000" class="service-link" target="_blank">Grafana</a>
+    </div>
+  </div>
+
+  <script>
+    const SERVER_IP = '51.250.87.95';
+    const trackingInput = document.getElementById('tracking_number');
+    trackingInput.value = 'TRK' + Math.floor(Math.random() * 1000000);
+
+    async function addPackage() {
+      const data = {
+        tracking_number: trackingInput.value,
+        status: 'formed',
+        warehouse_number: document.getElementById('warehouse_number').value,
+        product_name: document.getElementById('product_name').value
+      };
+
+      try {
+        const res = await fetch(`http://${SERVER_IP}:8000/add_package`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          alert('Посылка успешно добавлена!');
+          trackingInput.value = 'TRK' + Math.floor(Math.random() * 1000000);
+          document.getElementById('warehouse_number').value = '';
+          document.getElementById('product_name').value = '';
+        } else {
+          alert('Ошибка при добавлении посылки');
+        }
+      } catch {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+
+    async function getPackage() {
+      const track = document.getElementById('get_tracking').value.trim();
+      if (!track) {
+        alert('Пожалуйста, введите трек-номер');
+        return;
+      }
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'none';
+      
+      try {
+        const res = await fetch(`http://${SERVER_IP}:8000/get?tracking_number=${track}`);
+        if (!res.ok) throw new Error();
+        
+        const data = await res.json();
+        resultDiv.innerHTML = `
+          <h3>Информация о посылке</h3>
+          <p><strong>Трек-номер:</strong> ${track}</p>
+          <p><strong>Статус:</strong> ${data.status}</p>
+          <p><strong>Склад:</strong> ${data.warehouse_number}</p>
+          <p><strong>Товар:</strong> ${data.product_name}</p>`;
+        resultDiv.style.display = 'block';
+      } catch {
+        alert('Посылка с таким трек-номером не найдена');
+      }
+    }
+  </script>
+</body>
+</html>

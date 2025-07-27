@@ -29,6 +29,7 @@ services:
       - "8000:8000"
     depends_on:
       - ydb
+      - jaeger
     networks:
       - app-network
 
@@ -87,6 +88,16 @@ services:
       - app-network  
     command: -f /mnt/locust/locustfile.py  --host=http://${SERVER_IP}:8000
   
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: jaeger
+    ports:
+      - "6831:6831/udp"     # агент
+      - "16686:16686"       # веб-интерфейс
+      - "14268:14268"       # http endpoint (если нужно)
+    networks:
+      - app-network
+
 
 volumes:
   ydb_data:

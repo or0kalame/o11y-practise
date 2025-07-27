@@ -1,4 +1,7 @@
 import ydb
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
 
 class YDBClient:
     def __init__(self, endpoint="grpc://ydb:2136", database="/local"):
@@ -11,9 +14,11 @@ class YDBClient:
         self.driver.wait(timeout=10)
         self.pool = ydb.QuerySessionPool(self.driver)
 
-    def execute(self, query: str, params: dict = None):
-        result_sets = self.pool.execute_with_retries(query, params)
-        return result_sets
+    with tracer.start_as_current_span("YDB Query Execution") as span:
+        span.set_attribute("db.system", "ydb")
+        
+        def execute(self, query: str, params: dict = None):
+            result_sets = self.pool.execute_with_retries(query, params)
+            return result_sets
 
 db = YDBClient()
-

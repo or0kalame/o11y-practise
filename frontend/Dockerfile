@@ -7,6 +7,6 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN npm i express dotenv
 
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["node", "server.js"]
