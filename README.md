@@ -14,6 +14,7 @@ http://51.250.87.95:9090/query - Prometheus
 http://51.250.87.95:8089/ - Locust
 http://51.250.87.95:8765/monitoring/ - YDB
 http://51.250.87.95:16686/search - Jaeger
+
 ----
 ## 🧱 Стек технологий
 
