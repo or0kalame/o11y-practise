@@ -9,7 +9,7 @@
 *Если не работает, то вот все ссылки:*
 - http://51.250.87.95:5173/tracker - Фронтенд сервиса
 - http://51.250.87.95:8000/docs - Бэкенд сервиса 
-- http://51.250.87.95:3000/ - Grafana
+- http://51.250.87.95:3000/ - Grafana (login/password: admin)
 - http://51.250.87.95:9090/query - Prometheus
 - http://51.250.87.95:8089/ - Locust
 - http://51.250.87.95:8765/monitoring/ - YDB
