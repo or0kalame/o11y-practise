@@ -14,11 +14,10 @@ class YDBClient:
         self.driver.wait(timeout=10)
         self.pool = ydb.QuerySessionPool(self.driver)
 
-    with tracer.start_as_current_span("YDB Query Execution") as span:
-        span.set_attribute("db.system", "ydb")
+
         
-        def execute(self, query: str, params: dict = None):
-            result_sets = self.pool.execute_with_retries(query, params)
-            return result_sets
+    def execute(self, query: str, params: dict = None):
+        result_sets = self.pool.execute_with_retries(query, params)
+        return result_sets
 
 db = YDBClient()
